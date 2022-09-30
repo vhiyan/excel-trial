@@ -22,14 +22,15 @@ let groupKatashikiLog=[];
 let indexGroupLog=0;
 let counterKatashikiLog;
 let katashikiFromLogPrev={model:0,warna:0,type:0};
+let similiarity=0;
 
 
 const model={
   'D40L'  :1,
   'D40D'  :4,
-	'JUMP'  :4,
-  'SWING' :4,
-  'CUT'   :4,	
+	'JUMP'  :1,
+  'SWING' :1,
+  'CUT'   :1,	
   'D17D'  :5,	
   'D26'   :6,	
   'T26'   :7,
@@ -45,9 +46,9 @@ const model={
 const modelLog={
   1 :'D40L'  ,
   4 :'D40D'  ,
-  4 :'JUMP'  ,
-  4 :'SWING' ,
-  4 :'CUT'   ,
+  1 :'JUMP'  ,
+  1 :'SWING' ,
+  1 :'CUT'   ,
   5 :'D17D'  ,
   6 :'D26'   ,
   7 :'T26'   ,
@@ -105,6 +106,8 @@ function convert(item){
     if(data[0]==='RR'){
       return {"model":40,"color":warna[data[3]],"type":3}
     }
+    else if(data[0]==='26')
+      return {"model":6,"color":warna[data[1]],"type":3}
       else return item
   }
 
@@ -114,7 +117,7 @@ function convert(item){
   
   data[2]==='FR'?typeKatashiki=2:typeKatashiki=1;  //jika ada tambahan FR-FR type jd FR-FR
     
-  return {"model":model[data[0]],"color":warna[data[1]],"type":typeKatashiki}
+  return {"model":model[data[0]],"color":warna[data[1]]}
   }
 
 
@@ -158,7 +161,7 @@ function readall (stream)
       
       if(katashikiJson.model)
       {
-        if(katashikiJson.model!=katashikiJsonPrev.model||katashikiJson.color!=katashikiJsonPrev.color|| katashikiJson.type!=katashikiJsonPrev.type){
+        if(katashikiJson.model!=katashikiJsonPrev.model||katashikiJson.color!=katashikiJsonPrev.color){
           indexGroup++;
           counterKatashiki=0;
         }
@@ -181,12 +184,16 @@ function readall (stream)
       {
         katashikiFromLog = JSON.parse(tempKatashiki[1]);
         delete katashikiFromLog.counter;
+        delete katashikiFromLog.type;
         
-        if(katashikiFromLog.model!=katashikiFromLogPrev.model||katashikiFromLog.warna!=katashikiFromLogPrev.warna||katashikiFromLog.type!=katashikiFromLogPrev.type)
+        if(katashikiFromLog.model!=katashikiFromLogPrev.model||katashikiFromLog.color!=katashikiFromLogPrev.color)
         {
           indexGroupLog++;
           counterKatashikiLog=0;  
         }
+        
+        if(counterKatashikiLog>6){counterKatashikiLog=0;indexGroupLog++;}
+      
         counterKatashikiLog++;
         groupKatashikiLog[`${indexGroupLog}`] = {...katashikiFromLog,counter:counterKatashikiLog};
         katashikiFromLogPrev = katashikiFromLog;
@@ -197,17 +204,33 @@ function readall (stream)
   }
 
 
-  describe('compare', function() {
-    it('same', async function() {
-      const pattern  = await readExcelFile();
-      const plc = await readTxt();
-      console.log(plc.length);
-      it.each(plc,'tes',model,...)
-      for (let index = 0; index < plc.length; index++) {
-        if(pattern[index]&&pattern[index]){
-          assert.equal(pattern[index].model,plc[index].model);
-        }
-      }
-    });
-  });  
+
+(async()=>{
+  const pattern  = await readExcelFile();
+  const plc = await readTxt();
+  
+  console.log(plc.length,pattern.length);
+  
+  for (let indexCheck = 0; indexCheck < pattern.length; indexCheck++) {
+    if(!pattern[indexCheck])console.log('pattern null');
+    if(!plc[indexCheck])console.log('plc null');
+    
+    if(pattern[indexCheck]&&plc[indexCheck])
+    {
+      console.log(plc[indexCheck],pattern[indexCheck]);
+      let modelOK=false;
+      let colorOK=false;
+      let counterOK=false;
+
+      pattern[indexCheck].model===plc[indexCheck].model?modelOK=true:console.log(`model ${plc[indexCheck].model}-${pattern[indexCheck].model}`);
+      pattern[indexCheck].color===plc[indexCheck].color?colorOK=true:console.log(`warna ${plc[indexCheck].color}-${pattern[indexCheck].color}`);
+      pattern[indexCheck].counter===plc[indexCheck].counter?counterOK=true:console.log(`counter ${plc[indexCheck].counter}-${pattern[indexCheck].counter}`);
+
+      if(modelOK&&colorOK&&colorOK&&counterOK)similiarity++;
+    }
+
+  }
+console.log('selisih = ',pattern.length-similiarity);
+})();
+
 
