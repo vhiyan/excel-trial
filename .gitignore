@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+#dont updload xls file 
+.xls
+.xlsx

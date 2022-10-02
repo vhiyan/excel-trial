@@ -1,6 +1,6 @@
 const readXlsxFile = require('read-excel-file/node')
 const fs = require("fs");
-const assert = require('assert');
+
 
 const pathExcel = `29 SEPTEMBER 2022.xlsx`;
 const pathTxt = '/home/vian/daftarJig30Sept.txt';
@@ -106,9 +106,10 @@ function convert(item){
     if(data[0]==='RR'){
       return {"model":40,"color":warna[data[3]],"type":3}
     }
-    else if(data[0]==='26')
-      return {"model":6,"color":warna[data[1]],"type":3}
-      else return item
+    if(data[0]==='26')return {
+      "model":6,"color":warna[data[1]],"type":3
+    }
+    return item
   }
 
   if(!warna[data[1]]){  //jika warna gabung dengan tipe ex: 4T3FR-FR
@@ -206,14 +207,17 @@ function readall (stream)
 
 
 (async()=>{
-  const pattern  = await readExcelFile();
-  const plc = await readTxt();
+  let pattern  = await readExcelFile();
+  let plc = await readTxt();
+  pattern = pattern.filter(Boolean);
+  plc = plc.filter(Boolean);
   
+
   console.log(plc.length,pattern.length);
   
   for (let indexCheck = 0; indexCheck < pattern.length; indexCheck++) {
-    if(!pattern[indexCheck])console.log('pattern null');
-    if(!plc[indexCheck])console.log('plc null');
+    if(!pattern[indexCheck])console.log(pattern[indexCheck]);
+    if(!plc[indexCheck])console.log(plc[indexCheck]);
     
     if(pattern[indexCheck]&&plc[indexCheck])
     {
@@ -230,7 +234,5 @@ function readall (stream)
     }
 
   }
-console.log('selisih = ',pattern.length-similiarity);
+console.log('selisih = ',pattern.length-similiarity,"dari",pattern.length);
 })();
-
-
