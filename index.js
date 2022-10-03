@@ -3,7 +3,7 @@ const fs = require("fs");
 
 
 const pathExcel = `29 SEPTEMBER 2022.xlsx`;
-const pathTxt = '/home/vian/daftarJig30Sept.txt';
+const pathTxt = '/home/vian/daftarJig3Oct.txt';
 
 // // File path.
 let katashiki=[];
