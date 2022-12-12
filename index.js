@@ -8,22 +8,9 @@ const pathTxt = '/home/vian/daftarJig3Oct.txt';
 
 // // File path.
 let katashiki=[];
-let baris=[];
-let dataExcel={};
 let katashikiConv=[];
-let typeKatashiki;
 let groupKatashiki=[];
-let indexGroup=0;
-let katashikiJsonPrev={model:0,warna:0,type:0};
 let counterKatashiki=[0];
-
-let katashikiFromLog;
-let flattenKatashikiFromLog;
-let groupKatashikiLog=[];
-let indexGroupLog=0;
-let counterKatashikiLog;
-let katashikiFromLogPrev={model:0,warna:0,type:0};
-let similiarity=0;
 
 
 const model={
